@@ -3,6 +3,7 @@
 # breaks it on the GitHub Actions Ubuntu runner.
 mvnw text eol=lf
 *.sh text eol=lf
+.githooks/** text eol=lf
 
 # Windows batch wrappers stay CRLF.
 mvnw.cmd text eol=crlf
