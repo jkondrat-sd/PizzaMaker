@@ -1,6 +1,24 @@
+<div align="center">
+
 # PizzaMaker
 
-Full-stack pizza ordering app with a **live, what-you-see-is-what-you-get pizza builder** — toppings drop onto the pie in real time as you customise, and the exact pizza you build is the one shown on your order confirmation and in your order history.
+**Full-stack pizza ordering app with a live, what-you-see-is-what-you-get pizza builder — toppings drop onto the pie in real time as you customise, and the exact pizza you build is the one shown on your order confirmation and in your order history.**
+
+[![Live](https://img.shields.io/badge/live-pizzamaker.pages.dev-f38020?style=flat-square&logo=cloudflare&logoColor=white)](https://pizzamaker.pages.dev)
+[![Java](https://img.shields.io/badge/Java-21_LTS-ed8b00?style=flat-square&logo=openjdk&logoColor=white)](https://adoptium.net/)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.3-6db33f?style=flat-square&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![React](https://img.shields.io/badge/React-18-61dafb?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![Apache Kafka](https://img.shields.io/badge/Apache_Kafka-KRaft-231f20?style=flat-square&logo=apachekafka&logoColor=white)](https://kafka.apache.org/)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-Helm-326ce5?style=flat-square&logo=kubernetes&logoColor=white)](https://kubernetes.io/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
+
+</div>
+
+---
+
+**Live:** **[pizzamaker.pages.dev](https://pizzamaker.pages.dev)** — the backend runs on Render's
+free tier, so the first request after ~15 min idle takes 30–60s to wake the oven (a branded
+"Firing up the oven" overlay covers the wait). Warm, it responds in under a second.
 
 React + Vite frontend, Spring Boot REST backend.
 
@@ -441,3 +459,9 @@ Pagination params: `?page=0&size=10&sort=createdAt,desc`
 - JWT secret must be a Base64-encoded 256-bit key in production (set via `JWT_SECRET` env var).
 - The dev secret in `application.yml` is for local use only — never commit a real secret.
 - Guest users have `null` password hash; they authenticate only via JWT (no password endpoint).
+
+---
+
+## License
+
+MIT © Uday — see [LICENSE](LICENSE).
