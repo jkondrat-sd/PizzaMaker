@@ -2,6 +2,14 @@
   "name": "make-your-pizza",
   "version": "0.1.0",
   "private": true,
+  "description": "Full-stack pizza-ordering app with a live visual builder and an event-driven Spring Boot + Kafka backend.",
+  "author": "Uday Kanth Tirukkovaluri <t.uday.kanth12@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://pizzamaker.pages.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/udaykt/PizzaMaker.git"
+  },
   "dependencies": {
     "@reduxjs/toolkit": "^1.6.1",
     "@stomp/stompjs": "^6.1.2",

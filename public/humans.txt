@@ -1,0 +1,19 @@
+/* TEAM */
+
+  Developer & Designer: Uday Kanth Tirukkovaluri
+  Contact: t.uday.kanth12 [at] gmail.com
+  GitHub: github.com/udaykt
+  From: India
+
+/* SITE */
+
+  Last update: 2026/09/10
+  Live: https://pizzamaker.pages.dev
+  Frontend: React 18, Redux Toolkit, Vite, Framer Motion
+  Backend: Spring Boot 3, Java 21, Kafka, PostgreSQL, WebSocket/STOMP
+  Hosting: Cloudflare Pages (frontend), Render (API), Neon (database)
+
+/* LICENCE */
+
+  Source code: MIT (see /LICENSE)
+  Name, design, copy and image assets: All Rights Reserved (see /NOTICE)

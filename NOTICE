@@ -1,0 +1,40 @@
+PizzaMaker
+Copyright (c) 2026 Uday Kanth Tirukkovaluri <t.uday.kanth12@gmail.com>
+
+================================================================================
+What the MIT License covers
+================================================================================
+
+The LICENSE file (MIT) applies to the SOURCE CODE of this repository: the
+application code, configuration, build scripts, and infrastructure definitions.
+You may use, copy, modify, and redistribute the code under those terms, provided
+the copyright notice and the MIT permission notice are retained.
+
+================================================================================
+What is NOT licensed for reuse (All Rights Reserved)
+================================================================================
+
+The following are the author's original work and are NOT granted under the MIT
+License or any other licence. All rights are reserved. They may not be copied,
+reproduced, redistributed, or used to represent another project or product
+without the author's prior written permission:
+
+  1. The name "PizzaMaker" and any associated logos, wordmarks, and badge
+     artwork (e.g. src/assets/images/logo-*.png, public/logo*.png,
+     public/favicon.*).
+  2. The visual and interaction design: layout, colour system, CSS theme,
+     component styling, and animation choices.
+  3. Written content: marketing copy, in-app microcopy, and documentation prose
+     (README.md, ARCHITECTURE.md, docs/**).
+  4. Image and media assets under public/ and docs/ (including og.png and
+     docs/demo.gif).
+
+Third-party fonts under public/fonts/ are covered by their own licences and are
+not the author's to relicense.
+
+================================================================================
+Contact
+================================================================================
+
+For permission to use anything in the "All Rights Reserved" list above, or for
+licensing enquiries, contact: t.uday.kanth12@gmail.com

@@ -464,4 +464,10 @@ Pagination params: `?page=0&size=10&sort=createdAt,desc`
 
 ## License
 
-MIT © Uday — see [LICENSE](LICENSE).
+**Source code** — MIT © 2026 Uday Kanth Tirukkovaluri. See [LICENSE](LICENSE).
+
+**Name, visual design, copy, and image assets** — All Rights Reserved. The MIT
+grant covers the code only; you may not reuse the "PizzaMaker" name, the logo and
+badge artwork, the visual design, the written copy, or the images under `public/`
+and `docs/` to represent another project without written permission. See
+[NOTICE](NOTICE).
