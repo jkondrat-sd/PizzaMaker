@@ -77,6 +77,11 @@ app:
   # Shared secret for verifying inbound payment webhook signatures (HMAC-SHA256).
   webhook:
     secret: ${WEBHOOK_SECRET:whsec_dev_pizza_maker_local_secret}
+  # Token bucket on /api/v1/auth/**, per client IP. Env-overridable so a load test
+  # or an incident can widen/tighten the limit without a rebuild.
+  rate-limit:
+    auth-capacity: ${AUTH_RATE_LIMIT_CAPACITY:10}
+    auth-refill-minutes: ${AUTH_RATE_LIMIT_REFILL_MINUTES:1}
 
   kafka:
     # OFF by default, and that is deliberate: `./mvnw test`, CI and a bare

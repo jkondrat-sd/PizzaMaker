@@ -150,7 +150,9 @@ avoid running a second broker for a demo.)
 | --- | --- |
 | Docker + docker-compose | Local full stack (Postgres + Kafka + app) |
 | Kubernetes + Helm | Multi-replica deploy (minikube-ready), `k8s/` + `helm/` |
-| GitHub Actions | CI (`ci.yml`) + keep-warm cron (`keep-warm.yml`) |
+| GitHub Actions | CI (`ci.yml`), keep-warm cron (`keep-warm.yml`), image publishing (`publish-image.yml`) |
+| GHCR | Multi-arch (amd64 + **arm64**) backend images — arm64 because the free-forever VM tiers are ARM |
+| k6 | Load testing the order path (`k6-order-load.js`) |
 | Cloudflare Pages | Frontend hosting (`pizzamaker.pages.dev`) |
 | Render | Backend web service (free tier, kept awake by the keep-warm cron) |
 | Neon | Managed Postgres — **free-forever** serverless (`DATABASE_URL`) |
@@ -158,7 +160,7 @@ avoid running a second broker for a demo.)
 
 ### Testing
 
-JUnit 5 · Mockito · MockMvc · spring-security-test · **EmbeddedKafka** (spring-kafka-test) · **Testcontainers** (real Postgres) · Vitest (frontend)
+JUnit 5 · Mockito · MockMvc · spring-security-test · **EmbeddedKafka** (spring-kafka-test) · **Testcontainers** (real Postgres) · Vitest (frontend) · **k6** (load testing the order path)
 
 ### Fonts
 

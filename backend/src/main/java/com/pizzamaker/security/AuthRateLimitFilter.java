@@ -22,9 +22,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class AuthRateLimitFilter extends OncePerRequestFilter {
 
-    // 10 login/register attempts per minute per IP
-    private static final int CAPACITY = 10;
-    private static final Duration REFILL_PERIOD = Duration.ofMinutes(1);
+    @Value("${app.rate-limit.auth-capacity:10}")
+    private int capacity;
+
+    @Value("${app.rate-limit.auth-refill-minutes:1}")
+    private long refillMinutes;
 
     // Set to the direct IP of your trusted reverse proxy to honour X-Forwarded-For.
     // Leave empty (default) to always use RemoteAddr and ignore XFF.
@@ -35,7 +37,8 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
 
     private Bucket newBucket() {
         return Bucket.builder()
-                .addLimit(Bandwidth.simple(CAPACITY, REFILL_PERIOD))
+                .addLimit(Bandwidth.builder().capacity(capacity).refillIntervally(capacity,
+                        Duration.ofMinutes(refillMinutes)).build())
                 .build();
     }
 
@@ -46,8 +49,8 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain chain) throws ServletException, IOException {
+            HttpServletResponse response,
+            FilterChain chain) throws ServletException, IOException {
         String ip = clientIp(request);
         Bucket bucket = buckets.computeIfAbsent(ip, k -> newBucket());
 
@@ -64,7 +67,8 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
 
     private String clientIp(HttpServletRequest request) {
         String remoteAddr = request.getRemoteAddr();
-        // Only trust X-Forwarded-For when the direct connection comes from the configured proxy.
+        // Only trust X-Forwarded-For when the direct connection comes from the
+        // configured proxy.
         if (!trustedProxy.isBlank() && trustedProxy.equals(remoteAddr)) {
             String xff = request.getHeader("X-Forwarded-For");
             if (xff != null && !xff.isBlank()) {
@@ -74,12 +78,11 @@ public class AuthRateLimitFilter extends OncePerRequestFilter {
         return remoteAddr;
     }
 
-    // Sweep buckets that have been fully refilled (no active limiting) every minute.
+    // Sweep buckets that have been fully refilled (no active limiting) every
+    // minute.
     // This bounds heap growth from long-lived idle IP entries.
     @Scheduled(fixedRate = 60_000)
     public void evictInactiveBuckets() {
-        buckets.entrySet().removeIf(entry ->
-            entry.getValue().getAvailableTokens() >= CAPACITY
-        );
+        buckets.entrySet().removeIf(entry -> entry.getValue().getAvailableTokens() >= capacity);
     }
 }

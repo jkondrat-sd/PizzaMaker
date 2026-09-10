@@ -5,7 +5,9 @@ what does what" document. `README.md` tells you how to run it; `ARCHITECTURE.md`
 formal design write-up; this one is the tour.
 
 It is kept up to date as the project changes.
-Last updated: the k6 load-test harness (see [Part 7](#part-7--running-it)).
+Last updated: the auth rate limit became configurable (`app.rate-limit.*`, env
+`AUTH_RATE_LIMIT_CAPACITY` / `AUTH_RATE_LIMIT_REFILL_MINUTES`) — see
+[Part 8](#part-8--gotchas-that-will-bite-you).
 
 ---
 
@@ -97,7 +99,7 @@ Not "what is Kafka" — what does it do *in this app*, and what breaks if you re
 |---|---|---|
 | **Spring Boot** | Wires everything together; you write classes, it constructs them | Nothing works |
 | **Spring Data JPA / Hibernate** | Turns `Order` objects into SQL rows | You'd hand-write every query |
-| **Flyway** | Versioned schema changes (`V1__…` → `V21__…`), applied in order on boot | New deploys hit a schema they don't recognise |
+| **Flyway** | Versioned schema changes (`V1__…` → `V22__…` in `db/migration/common/`), applied in order on boot | New deploys hit a schema they don't recognise |
 | **H2 / PostgreSQL** | H2 in dev (in-memory, resets on restart), Postgres in prod | — |
 | **Spring Security + JWT** | Every request carries a signed token; no server-side session | Anyone could order as anyone |
 | **Bucket4j** | Rate-limits the auth endpoints | Brute-force login is free |
@@ -105,11 +107,16 @@ Not "what is Kafka" — what does it do *in this app*, and what breaks if you re
 | **Transactional Outbox** | Makes "order saved" and "event emitted" atomic | See Part 4 — this is the important one |
 | **Kafka** | A durable, replayable log between "order placed" and the work it triggers | The kitchen pipeline; no fan-out to future consumers |
 | **Resilience4j** | Retries + circuit-breaks the notification call | One flaky downstream stalls things |
-| **Micrometer / Actuator** | `/actuator/health` for K8s probes, `/actuator/prometheus` for metrics | K8s can't tell if a pod is alive |
+| **Micrometer / Actuator** | `/actuator/health` for K8s probes, `/actuator/prometheus` for metrics — including the `pizza.outbox.pending` gauge, the one an on-call engineer actually watches | K8s can't tell if a pod is alive; a wedged relay is invisible |
+| **logstash-logback-encoder** | Structured JSON logs, `prod` profile only | Log aggregators get unparseable text |
+| **springdoc-openapi** | Generates Swagger UI from the controllers | Hand-written, immediately-stale API docs |
 | **Lombok** | Generates getters/builders so entities aren't 300 lines | Lots of typing |
-| **Testcontainers** | Runs the integration test against a *real* Postgres | H2-only tests miss Postgres-specific bugs |
+| **EmbeddedKafka** | An in-JVM broker, so the Kafka tests need no Docker | CI would need a real broker |
+| **Testcontainers** | Runs the integration test against a *real* Postgres | H2-only tests miss Postgres-specific bugs — like the partial unique index H2 can't express |
+| **k6** | Load-tests the order path (`k6-order-load.js`) | No evidence the thing holds up under concurrency |
 | **Docker / docker-compose** | One command brings up Postgres + Kafka + the app | Manual setup of three services |
 | **Kubernetes / Helm** | Runs multiple replicas with health probes and config/secrets split out | No multi-replica story |
+| **GitHub Actions** | CI on every push, the keep-warm cron, and multi-arch image publishing to GHCR | Manual builds; the free-tier backend sleeps |
 
 ---
 
@@ -291,7 +298,7 @@ The ★ files are the ones worth actually reading.
 | The order lifecycle | `OrderStatus` (the transition table) |
 | What the customer sees pushed | `OrderStatusUpdateResponse` + `useOrderUpdates.js` |
 | Who can call what | `SecurityConfig` + `@PreAuthorize` on controllers |
-| The schema | a **new** `V22__*.sql` — never edit an applied migration |
+| The schema | a **new** `db/migration/common/V23__*.sql` — never edit an applied migration |
 
 ---
 
@@ -423,7 +430,7 @@ script is shaped the way it is.
 | Status pushes vanish at `replicas: 2` | The broadcast listener lost its per-pod group id. See Part 6. |
 | Customer gets a burst of stale toasts on restart | The broadcast consumer is on `earliest`. A brand-new group id + `earliest` = replay the entire topic. It must be `latest`. |
 | Flyway checksum error | Someone edited an already-applied migration. Never do that; add a new one. |
-| A load test 429s a few seconds in | `AuthRateLimitFilter` caps `/api/v1/auth/**` at 10 req/min per IP. Authenticate once in `setup()` and share the token — never log in per VU. |
+| A load test 429s a few seconds in | `AuthRateLimitFilter` caps `/api/v1/auth/**` at 10 req/min per IP *by default* (`app.rate-limit.auth-capacity`, env `AUTH_RATE_LIMIT_CAPACITY`). Authenticate once in `setup()` and share the token — never log in per VU. Widening the limit hides the symptom, not the mistake. |
 | Load test 401s on every request | The target wasn't started with the `loadtest` profile, so `V900__loadtest_user.sql` never ran. `k6-order-load.js` self-registers instead, but only if it sees the 401 on login. |
 | `Detected applied migration not resolved locally: 900` | The `loadtest` profile was enabled against a persistent DB and then removed. Drop the user and its `flyway_schema_history` row, or restart the ephemeral Postgres pod. |
 | `helm upgrade` changes config but nothing happens | Env vars are read once at container start. The pod template needs a config checksum annotation to force a roll — it has one; don't remove it. |

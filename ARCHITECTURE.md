@@ -25,24 +25,30 @@
 
 ## Tech Stack
 
-| Layer           | Technology                               | Why                                     |
-| --------------- | ---------------------------------------- | --------------------------------------- |
-| Frontend        | React 18 + Redux Toolkit                 | Industry standard, concurrent rendering |
-| Routing         | React Router v5                          | Client-side SPA routing                 |
-| HTTP Client     | Axios + interceptors                     | JWT attach, 401 auto-logout             |
-| Real-time       | STOMP over SockJS                        | WebSocket with graceful fallback        |
-| Notifications   | react-hot-toast                          | Lightweight, accessible toasts          |
-| Backend         | Spring Boot 3.3.5 + Java 21 (LTS)        | Production-grade; 21 is what Boot 3.3 supports |
-| Security        | Spring Security 6 + JWT (jjwt)           | Stateless, interview-ready              |
-| ORM             | Spring Data JPA (Hibernate)              | Standard relational data access         |
-| Database (dev)  | H2 in-memory                             | Zero setup for local dev                |
-| Database (prod) | PostgreSQL on Neon (serverless)          | Free, resume-worthy, scalable           |
-| Migrations      | Flyway                                   | Version-controlled schema               |
-| API Docs        | Springdoc OpenAPI / Swagger UI           | Auto-generated, testable                |
-| Event log       | Apache Kafka (KRaft, no Zookeeper)       | Durable, replayable, fans out to future consumers |
-| Event delivery  | Transactional Outbox + polling relay     | Kills the dual-write problem — see below |
-| Resilience      | Resilience4j retry + circuit breaker     | Transient downstream failures don't cascade |
-| Orchestration   | Kubernetes + Helm                        | Multi-replica with health probes        |
+> **The full inventory lives in [`README.md`](README.md#tech-stack--full-reference)** —
+> every library, version and hosting service, frontend and backend. That table is the
+> single source of truth; add new dependencies there.
+>
+> This section is the *shorter, opinionated* list: the choices that shaped the
+> architecture, and what each one bought. If removing it would change the design rather
+> than just the code, it's here.
+
+| Decision                       | Chosen                                   | What it bought                                            |
+| ------------------------------ | ---------------------------------------- | --------------------------------------------------------- |
+| Runtime + framework            | Java 21 (LTS) + Spring Boot 3.3.5        | Virtual-thread-era LTS; 21 is Boot 3.3's baseline          |
+| Auth model                     | Spring Security 6 + JWT (jjwt)           | **Stateless** — any pod can serve any request, no sticky sessions |
+| Persistence                    | Spring Data JPA / Hibernate              | One `@Transactional` boundary spanning the order *and* its outbox row |
+| Schema evolution               | Flyway                                   | Migrations are reviewable code; prod and dev can't drift silently |
+| Database split                 | H2 (dev) / PostgreSQL 16 (prod, Neon)    | `git clone && mvnw spring-boot:run` needs zero setup; prod gets `SKIP LOCKED` |
+| Event delivery                 | Transactional Outbox + polling relay     | Kills the dual-write problem — the event exists **iff** the order does |
+| Event log                      | Apache Kafka (KRaft, no Zookeeper)       | Durable, replayable, keyed ordering per order; fans out to future consumers |
+| Real-time push                 | STOMP over SockJS, in-memory broker      | Server pushes status; the browser never polls. Cost: a per-pod consumer group — see [below](#the-multi-replica-problem-and-why-the-consumer-group-is-per-pod) |
+| Downstream failure containment | Resilience4j retry + circuit breaker     | A flaky notification provider can't stall the order path   |
+| Abuse control                  | Bucket4j token bucket per IP             | Brute-force login costs the attacker; limit is a property, not a constant |
+| Observability                  | Actuator + Micrometer → Prometheus       | K8s liveness/readiness probes, plus business gauges (outbox backlog) |
+| Log format                     | logstash-logback-encoder (`prod` only)   | Structured JSON straight into ELK/Datadog; human-readable locally |
+| Correctness of tests           | Testcontainers (real Postgres) + EmbeddedKafka | Integration tests exercise the *actual* Postgres migrations and a real broker, with no external services |
+| Orchestration                  | Kubernetes + Helm                        | Multi-replica with health probes — which is what forced the per-pod-group design |
 
 ---
 
@@ -401,21 +407,60 @@ trade-off, not an oversight.
 
 ### Backend
 
+**Auth & access control**
+
 | Feature                         | File(s)                                                     |
 | ------------------------------- | ----------------------------------------------------------- |
 | JWT auth (register/login/guest) | `AuthService`, `AuthController`, `JwtTokenProvider`         |
 | JWT filter (stateless)          | `JwtAuthenticationFilter`                                   |
-| Order CRUD (paginated)          | `OrderService`, `OrderController`, `OrderRepository`        |
-| Admin-only endpoints            | `SecurityConfig` (`hasRole("ADMIN")`)                       |
+| WebSocket handshake auth        | `StompAuthChannelInterceptor` — the JWT is checked on CONNECT, not just HTTP |
+| Admin-only endpoints            | `SecurityConfig` (`hasRole("ADMIN")`) + `@PreAuthorize`     |
+| Auth rate limiting (per IP)     | `AuthRateLimitFilter` — Bucket4j, configurable, idle buckets swept |
 | Admin seed on startup           | `DataSeeder` (creates admin on first boot)                  |
-| Async notification              | `NotificationService` (`@Async`)                            |
-| Menu/pricing API                | `MenuService`, `MenuController`                             |
-| User profile API                | `UserController`                                            |
-| Global error handling           | `GlobalExceptionHandler`                                    |
-| DB migrations                   | `V1__create_users_table.sql`, `V2__create_orders_table.sql` |
-| WebSocket broadcast             | `WebSocketConfig`, `OrderService.updateStatus()`            |
-| OpenAPI docs                    | `OpenApiConfig`, `/swagger-ui/index.html`                   |
-| HikariCP tuning                 | `application-prod.yml`                                      |
+
+**The order path** — this is the centrepiece; see [Order Placement Flow](#order-placement-flow)
+
+| Feature                          | File(s)                                                      |
+| -------------------------------- | ------------------------------------------------------------ |
+| Order placement (one transaction) | `OrderService.placeOrder()` — order + line items + status history + outbox row |
+| Idempotent ordering              | `Idempotency-Key` header + a partial unique index (`V19`)     |
+| Server-side pricing              | `PricingService` — the client-sent price is ignored           |
+| Topping validation               | `OrderService.sanitizeToppings()` against `CatalogService`    |
+| Status state machine             | `OrderStatus.canTransitionTo()` — what makes at-least-once delivery safe |
+| Order CRUD (paginated)           | `OrderController`, `OrderRepository`                          |
+
+**Event pipeline**
+
+| Feature                        | File(s)                                                       |
+| ------------------------------ | ------------------------------------------------------------- |
+| Transactional outbox (write)   | `OutboxService`                                               |
+| Outbox relay (drain)           | `OutboxRelay` — `@Scheduled`, `SELECT … FOR UPDATE SKIP LOCKED` |
+| Publisher routing              | `OutboxDispatcher` → `KafkaOrderEventPublisher` *or* `InProcessOrderEventPublisher` |
+| Self-advancing lifecycle       | `OrderLifecycleListener` — `PENDING → CONFIRMED → PREPARING → READY` |
+| Live status push               | `OrderStatusBroadcastListener` → STOMP, unique consumer group per pod |
+| Retry + dead-letter routing    | `KafkaConfig` `DefaultErrorHandler`, `NonRetryableEventException` → `*.DLT` |
+| Kafka on/off switch            | `KafkaEventProperties` + `@ConditionalOnProperty(app.kafka.enabled)` |
+
+**Supporting subsystems**
+
+| Feature                     | File(s)                                                          |
+| --------------------------- | ---------------------------------------------------------------- |
+| Payments (pluggable)        | `PaymentProvider` / `StubPaymentProvider`, `PaymentService`, `PaymentController` |
+| Payment webhooks            | `WebhookController` + `WebhookVerifier` (HMAC-SHA256, `WEBHOOK_SECRET`) |
+| Analytics                   | `AnalyticsService`, `AnalyticsController` — revenue, topping popularity, status funnel |
+| Menu / catalogue API        | `MenuService`, `CatalogService`, `MenuController`                |
+| User profile API            | `UserController`                                                 |
+| Async notification          | `NotificationService` (`@Async`), Resilience4j retry + circuit breaker |
+| Metrics                     | `MetricsConfig` — `pizza.outbox.pending` / `.failed` gauges, `pizza.orders.placed` counter |
+| Auditing                    | `AuditorConfig` — JPA `@CreatedBy` / `@LastModifiedBy`           |
+| Global error handling       | `GlobalExceptionHandler`                                         |
+| OpenAPI docs                | `OpenApiConfig`, `/swagger-ui/index.html` (disabled in `prod`)   |
+| HikariCP tuning             | `application-prod.yml`                                           |
+
+**Migrations** — `db/migration/common/` holds `V1` … `V22`, applied to every database.
+Dialect-specific overrides live in `h2/` and `postgresql/` (currently the idempotency
+index, which Postgres expresses as a partial unique index and H2 cannot). `loadtest/`
+holds `V900__loadtest_user.sql` and is only on the classpath under the `loadtest` profile.
 
 ### Frontend
 
@@ -734,10 +779,16 @@ authentication in `setup()`, then a ramping-VU scenario that POSTs
 `/api/v1/orders` and reads each created order back.
 
 **Why auth happens once, not per VU.** `AuthRateLimitFilter` allows 10 requests
-per minute per IP to `/api/v1/auth/**`. A login inside the default function
-would start returning 429 the moment the ramp passes 10 VUs, and the run would
-be measuring the rate limiter instead of the order path. The token is obtained
-once and shared across VUs.
+per minute per IP to `/api/v1/auth/**` by default. A login inside the default
+function would start returning 429 the moment the ramp passes that, and the run
+would be measuring the rate limiter instead of the order path. The token is
+obtained once and shared across VUs.
+
+The limit is a property, not a constant — `app.rate-limit.auth-capacity` and
+`app.rate-limit.auth-refill-minutes`, overridable per environment via
+`AUTH_RATE_LIMIT_CAPACITY` / `AUTH_RATE_LIMIT_REFILL_MINUTES`. Raising it for a
+load test is a legitimate use, but prefer the shared-token approach: a run that
+needs a wider auth limit is usually measuring the wrong thing.
 
 **Why topping ids are fetched, not hardcoded.** `OrderService.sanitizeToppings()`
 rejects any code that isn't active in the `topping` table with a 400. The script
@@ -914,15 +965,43 @@ depends only on a `DATABASE_URL`, so nothing on the app side is tied to a specif
 
 ### Backend
 
+**Core**
+
 | Variable                 | Default                 | Description                                                                     |
 | ------------------------ | ----------------------- | ------------------------------------------------------------------------------- |
-| `DATABASE_URL`           | H2 (dev)                | JDBC connection string                                                          |
-| `DATABASE_USERNAME`      | `sa`                    | DB user                                                                         |
-| `DATABASE_PASSWORD`      | _(blank)_               | DB password                                                                     |
+| `SPRING_PROFILES_ACTIVE` | default                 | `prod` for PostgreSQL. Append `,loadtest` to seed the k6 account — never in a real deployment |
+| `PORT`                   | `8080`                  | HTTP listen port. Render injects this; don't hardcode it                        |
 | `JWT_SECRET`             | hardcoded dev key       | Base64-encoded HMAC secret (min 32 bytes) — generate: `openssl rand -base64 32` |
 | `JWT_EXPIRATION_MS`      | `86400000`              | Token lifetime (24 hours)                                                       |
-| `SPRING_PROFILES_ACTIVE` | default                 | `prod` for PostgreSQL. Append `,loadtest` to seed the k6 account — never in a real deployment |
 | `ALLOWED_ORIGINS`        | `http://localhost:3000` | Comma-separated allowed origins for CORS and WebSocket                          |
+| `WEBHOOK_SECRET`         | dev placeholder         | HMAC-SHA256 shared secret for verifying inbound payment webhooks. **Must be set in prod** — the default accepts the dev signature |
+
+**Database** — set `DATABASE_URL` (a full JDBC string, what Neon and Render use) *or* the
+three `DATABASE_HOST`/`PORT`/`NAME` parts. `application-prod.yml` prefers `DATABASE_URL`
+when it's present.
+
+| Variable            | Default            | Description                                                     |
+| ------------------- | ------------------ | ---------------------------------------------------------------- |
+| `DATABASE_URL`      | H2 (dev profile)   | Full JDBC connection string — takes precedence over the parts    |
+| `DATABASE_HOST`     | **required**       | Only when `DATABASE_URL` is unset. No default — prod fails to start without one of the two |
+| `DATABASE_PORT`     | `5432`             | Only when `DATABASE_URL` is unset                                |
+| `DATABASE_NAME`     | **required**       | Only when `DATABASE_URL` is unset                                |
+| `DATABASE_USERNAME` | _(blank)_          | DB user                                                          |
+| `DATABASE_PASSWORD` | _(blank)_          | DB password                                                      |
+
+**Kafka** — off by default, on purpose. See [Part 6 of the Project Guide](docs/PROJECT_GUIDE.md#part-6--the-kafka-pipeline).
+
+| Variable                   | Default          | Description                                                         |
+| -------------------------- | ---------------- | ------------------------------------------------------------------- |
+| `KAFKA_ENABLED`            | `false`          | `true` turns on the full event pipeline. Off, the outbox dispatches in-process |
+| `KAFKA_BOOTSTRAP_SERVERS`  | `localhost:9092` | Broker list. `docker compose` sets both of these for you            |
+
+**Rate limiting** — the auth token bucket, per client IP.
+
+| Variable                          | Default | Description                                              |
+| --------------------------------- | ------- | -------------------------------------------------------- |
+| `AUTH_RATE_LIMIT_CAPACITY`        | `10`    | Requests allowed to `/api/v1/auth/**` per refill window  |
+| `AUTH_RATE_LIMIT_REFILL_MINUTES`  | `1`     | Length of the refill window, in minutes                  |
 
 ### Frontend
 
