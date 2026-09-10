@@ -1,60 +1,66 @@
+/* Four faces, one job each. All self-hosted, subset to Latin plus currency and
+   served as WOFF2. Google Sans, Space Mono and Saira are OFL; Autolova is free
+   for commercial use. Product Sans, Inter, Bebas Neue, Ketchup
+   Manis and Bourbon are gone: Product Sans was never licensed for
+   redistribution, and Google Sans is the licensed face with the same design DNA
+   plus four real weights and matching italics. */
+
+/* Google Sans carries every piece of UI text: body, labels, inputs, buttons,
+   nav. One variable file spans 400-700; opsz and GRAD are pinned to default. */
 @font-face {
-  font-family: 'Product Sans';
-  src: url('/fonts/ProductSans-Regular.ttf') format('truetype');
-  font-weight: 400;
+  font-family: 'Google Sans';
+  src: url('/fonts/GoogleSans-Var.woff2') format('woff2');
+  font-weight: 400 700;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Product Sans';
-  src: url('/fonts/ProductSans-Italic.ttf') format('truetype');
-  font-weight: 400;
+  font-family: 'Google Sans';
+  src: url('/fonts/GoogleSans-Italic-Var.woff2') format('woff2');
+  font-weight: 400 700;
   font-style: italic;
   font-display: swap;
 }
 
+/* Space Mono takes every digit. Tabular figures stop a live cart total from
+   shifting as it updates, and it carries every currency sign the three display
+   faces below are missing, the rupee included. */
 @font-face {
-  font-family: 'Product Sans';
-  src: url('/fonts/ProductSans-Bold.ttf') format('truetype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Product Sans';
-  src: url('/fonts/ProductSans-BoldItalic.ttf') format('truetype');
-  font-weight: 700;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Bourbon';
-  src: url('/fonts/Bourbon-Regular.otf') format('opentype');
+  font-family: 'Space Mono';
+  src: url('/fonts/SpaceMono-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Bourbon';
-  src: url('/fonts/Bourbon-Rough.otf') format('opentype');
+  font-family: 'Space Mono';
+  src: url('/fonts/SpaceMono-Bold.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
-/* Ketchup Manis — the pizza voice. A friendly, saucy display face used ONLY for
-   pizza names and top-level brand headings (see --font-brand). Deliberately kept
-   away from body text and UI labels: it's characterful, not legible at small
-   sizes or in long paragraphs. Licence: freeware, non-commercial. */
+/* Autolova is the brand voice: the generated pizza name in the builder, the
+   confirmation modal and order history, plus the page titles on About, Contact
+   and the warmup overlay. One weight, and it only ever runs at heading size. */
 @font-face {
-  font-family: 'Ketchup Manis';
-  src: url('/fonts/KetchupManis.otf') format('opentype'),
-       url('/fonts/KetchupManis.ttf') format('truetype');
+  font-family: 'Autolova';
+  src: url('/fonts/Autolova.woff2') format('woff2');
   font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Saira Condensed handles all-caps category strips and eyebrow labels. The
+   width axis is pinned to Condensed; the weight axis stays live across 400-700
+   so a strip and an eyebrow can differ without a second file. Unlike the
+   display faces it carries every currency sign, the rupee included. */
+@font-face {
+  font-family: 'Saira Condensed';
+  src: url('/fonts/SairaCondensed-Var.woff2') format('woff2');
+  font-weight: 400 700;
   font-style: normal;
   font-display: swap;
 }
@@ -74,16 +80,45 @@
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 20px;
-  /* Two faces, one job each: --font for body copy, --font-caps for every
-     heading, label and button. The old --font-display (Luxury) and
-     --font-script (Thirsty Script) are gone — a connected script can't take a
-     long generated pizza name without wrapping to four lines, and two more
-     display faces bought nothing that Bebas Neue doesn't already do. */
-  /* --font-brand is the pizza voice, reserved for pizza names and hero/brand
-     headings. Falls back to the caps face if Ketchup Manis hasn't loaded. */
-  --font-brand: 'Ketchup Manis', 'Bebas Neue', sans-serif;
-  --font: 'Product Sans', 'Inter', system-ui, sans-serif;
-  --font-caps: 'Bebas Neue', sans-serif;
+  /* Four faces, one job each: --font for all UI text, --font-caps for the
+     all-caps strips and eyebrows, --font-brand for pizza names and page titles,
+     --font-mono for every digit and currency sign. Fascinate, Verve, Ranchers
+     and Molle were all tried and cut — Autolova covers the brand voice on its
+     own, so a second display face earned nothing. */
+  --font: 'Google Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-caps: 'Saira Condensed', 'Google Sans', sans-serif;
+  --font-brand: 'Autolova', cursive;
+  --font-mono: 'Space Mono', ui-monospace, 'Cascadia Mono', monospace;
+
+  /* Type ramp. Each rung bundles size, line-height and tracking so the three
+     can't drift apart the way 33 loose font-size values did. */
+  --text-display: 3rem;
+  --text-display-lh: 1.05;
+  --text-display-ls: 0.5px;
+  --text-title: 2.2rem;
+  --text-title-lh: 1.1;
+  --text-title-ls: 0.4px;
+  --text-heading: 1.6rem;
+  --text-heading-lh: 1.2;
+  --text-heading-ls: 0.3px;
+  --text-subheading: 1.3rem;
+  --text-subheading-lh: 1.25;
+  --text-subheading-ls: 0.2px;
+  --text-body: 0.95rem;
+  --text-body-lh: 1.55;
+  --text-body-ls: 0;
+  --text-body-sm: 0.85rem;
+  --text-body-sm-lh: 1.5;
+  --text-body-sm-ls: 0.1px;
+  --text-label: 0.8rem;
+  --text-label-lh: 1.3;
+  --text-label-ls: 1px;
+  --text-caption: 0.72rem;
+  --text-caption-lh: 1.4;
+  --text-caption-ls: 0.3px;
+  --text-micro: 0.68rem;
+  --text-micro-lh: 1.35;
+  --text-micro-ls: 1px;
 
   --slice-color: #c8883a;
   --sauce-color: #c0392b;

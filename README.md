@@ -182,7 +182,16 @@ JUnit 5 · Mockito · MockMvc · spring-security-test · **EmbeddedKafka** (spri
 
 ### Fonts
 
-Bebas Neue (`--font-caps`) · Product Sans (`--font`) · **Ketchup Manis** (`--font-brand`, pizza names + hero) · Bourbon
+Four self-hosted faces, subset to Latin + currency and served as WOFF2 (~180 KB total, no third-party font request):
+
+| Token | Face | Job |
+|---|---|---|
+| `--font` | **Google Sans** (variable 400–700 + italics) | All UI text: body, labels, inputs, buttons, nav |
+| `--font-brand` | **Autolova** | Pizza names and page titles |
+| `--font-caps` | **Saira Condensed** (variable 400–700) | All-caps category strips and eyebrow labels |
+| `--font-mono` | **Space Mono** (400/700) | Every digit and currency sign — tabular figures so a live total never shifts |
+
+Google Sans, Saira and Space Mono are OFL; Autolova is free for commercial use. Product Sans, Inter, Bebas Neue, Ketchup Manis and Bourbon were removed — Product Sans was never licensed for redistribution.
 
 ---
 

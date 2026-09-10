@@ -137,10 +137,11 @@
 .orderOid {
   display: block;
   margin-bottom: 12px;
-  font-family: var(--font);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: 0.68rem;
   color: rgba(255, 255, 255, 0.32);
-  letter-spacing: 0.5px;
+  letter-spacing: 0;
 }
 
 .orderStatus {
@@ -209,8 +210,10 @@
 }
 
 .orderPrice {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
   color: #ff6b00;
-  font-weight: bold;
+  font-weight: 700;
 }
 
 .orderAgainBtn {

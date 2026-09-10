@@ -158,8 +158,9 @@
 }
 
 .ticketValue {
-  font-family: var(--font);
-  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.9);
   text-align: right;
 }
@@ -180,9 +181,10 @@
 }
 
 .ticketTotalValue {
-  font-family: var(--font-caps);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: 1.15rem;
-  font-weight: 400;
+  font-weight: 700;
   color: #ff6b00;
 }
 

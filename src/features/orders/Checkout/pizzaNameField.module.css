@@ -35,7 +35,7 @@
   min-width: 0;
   margin: 0;
   color: white;
-  /* The pizza voice. Ketchup Manis has taller metrics than the caps face, so the
+  /* The pizza voice. Autolova has taller metrics than the caps face, so the
      size is a touch smaller and the line-height a touch looser to compensate. */
   font-family: var(--font-brand);
   font-weight: 400;

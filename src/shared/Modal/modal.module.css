@@ -152,16 +152,19 @@
 .receiptOid {
   color: #ff6b00;
   font-weight: 700;
+  font-family: var(--font-mono);
   font-size: 0.72rem;
-  letter-spacing: 0.2px;
+  letter-spacing: 0;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   max-width: none;
 }
 
 .receiptPrice {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
   color: #ff6b00;
-  font-weight: 800;
+  font-weight: 700;
   font-size: 1.15rem;
   text-shadow: 0 0 14px rgba(255, 107, 0, 0.35);
 }

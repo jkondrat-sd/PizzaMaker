@@ -11,9 +11,6 @@ const About = () => (
   <div className={styles.about}>
     <section className={styles.hero}>
       <span className={styles.est}>Est. 1978 — allegedly</span>
-      {/* No period in this heading on purpose: it uses --font-brand (Ketchup
-          Manis), whose demo cut is missing the full-stop glyph and renders it as
-          tofu. Commas and apostrophes are fine, so the comma phrasing is safe. */}
       <h1 className={styles.title}>One item on the menu, and it's yours</h1>
       <p className={styles.lede}>
         Most pizza places sell you their idea of a pizza. This one only sells yours:

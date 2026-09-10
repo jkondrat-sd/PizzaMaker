@@ -47,11 +47,12 @@
 }
 
 .greeting h1 {
-  /* Hero brand moment — the pizza voice (Ketchup Manis). */
-  font-family: var(--font-brand);
-  font-size: 2.6rem;
-  font-weight: 400;
-  letter-spacing: 0.5px;
+  /* Just a greeting, not a brand moment — plain UI face. The pizza name below
+     carries the character. */
+  font-family: var(--font);
+  font-size: 1.9rem;
+  font-weight: 600;
+  letter-spacing: -0.2px;
   color: var(--text);
   margin-bottom: 6px;
 }
@@ -118,11 +119,14 @@
 }
 
 .priceValue {
-  font-family: var(--font-caps);
+  /* The one number that recomputes on every topping toggle. Mono + tabular
+     figures so it counts up in place instead of nudging the layout. */
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: 2.2rem;
   font-weight: 400;
   color: #ff6b00;
-  letter-spacing: -1px;
+  letter-spacing: 0;
 }
 
 .actionButtons {
@@ -241,7 +245,8 @@
   }
 
   .stickyPriceValue {
-    font-family: var(--font-caps);
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     font-size: 1.3rem;
     font-weight: 400;
     color: #ff6b00;
@@ -255,7 +260,7 @@
 
 @media screen and (max-width: 520px) {
   .greeting h1 {
-    font-size: 1.1rem;
+    font-size: 1.4rem;
   }
 
   .priceValue {

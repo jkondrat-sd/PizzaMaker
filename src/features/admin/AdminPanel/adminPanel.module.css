@@ -111,8 +111,10 @@
 .adminTableRow:hover { background: rgba(255,255,255,0.06); }
 
 .adminOid {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
   color: #ff6b00;
-  font-weight: bold;
+  font-weight: 700;
   font-size: 0.8rem;
 }
 
@@ -129,6 +131,8 @@
 }
 
 .adminPrice {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
   color: #ff6b00;
   font-weight: 700;
 }

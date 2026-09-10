@@ -30,7 +30,8 @@ without the author's prior written permission:
      docs/demo.gif).
 
 Third-party fonts under public/fonts/ are covered by their own licences and are
-not the author's to relicense.
+not the author's to relicense. See public/fonts/LICENSES.md for the family,
+licence and copyright notice behind each file.
 
 ================================================================================
 Contact
