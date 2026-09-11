@@ -26,7 +26,7 @@
   align-items: center;
   justify-content: center;
   font-family: var(--font-caps);
-  font-size: 1.4rem;
+  font-size: var(--text-subheading);
   font-weight: 700;
   letter-spacing: 5px;
 }
@@ -37,7 +37,7 @@
   margin: 6px 0 0;
   text-align: center;
   font-family: var(--font);
-  font-size: 0.72rem;
+  font-size: var(--text-caption);
   line-height: 1.4;
   color: rgba(255, 255, 255, 0.3);
 }
@@ -57,7 +57,7 @@
   align-items: center;
   gap: 7px;
   font-family: var(--font-caps);
-  font-size: 0.8rem;
+  font-size: var(--text-label);
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 2.5px;
@@ -120,7 +120,7 @@
 }
 
 .cheeseName {
-  font-size: 0.72rem;
+  font-size: var(--text-caption);
   font-weight: 600;
   font-family: var(--font);
   color: var(--text);
@@ -174,7 +174,7 @@
 
 .toppingName {
   flex: 1;
-  font-size: 0.82rem;
+  font-size: var(--text-label);
   font-weight: 600;
   font-family: var(--font);
   text-transform: capitalize;

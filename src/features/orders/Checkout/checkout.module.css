@@ -125,7 +125,7 @@
   background: transparent;
   color: rgba(255, 255, 255, 0.55);
   font-family: var(--font-caps);
-  font-size: 0.9rem;
+  font-size: var(--text-body-sm);
   font-weight: 400;
   cursor: pointer;
   transition: all 0.18s ease;
@@ -150,7 +150,7 @@
 
 .ticketLabel {
   font-family: var(--font-caps);
-  font-size: 0.9rem;
+  font-size: var(--text-body-sm);
   font-weight: 400;
   color: rgba(255, 255, 255, 0.55);
   text-transform: uppercase;
@@ -160,7 +160,7 @@
 .ticketValue {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  font-size: 0.8rem;
+  font-size: var(--text-label);
   color: rgba(255, 255, 255, 0.9);
   text-align: right;
 }
@@ -173,7 +173,7 @@
 
 .ticketTotalLabel {
   font-family: var(--font-caps);
-  font-size: 0.9rem;
+  font-size: var(--text-body-sm);
   font-weight: 700;
   color: white;
   text-transform: uppercase;
@@ -183,7 +183,7 @@
 .ticketTotalValue {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  font-size: 1.15rem;
+  font-size: var(--text-lead);
   font-weight: 700;
   color: #ff6b00;
 }
@@ -203,7 +203,7 @@
   border-radius: 12px;
   border: none;
   font-family: var(--font-caps);
-  font-size: 0.85rem;
+  font-size: var(--text-body-sm);
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.18s ease, transform 0.18s ease;
@@ -245,7 +245,7 @@
 }
 
 .emptyIcon {
-  font-size: 2.6rem;
+  font-size: var(--text-title);
 }
 
 .checkoutEmpty p {
@@ -264,7 +264,7 @@
   border: 1px solid rgba(255, 107, 0, 0.4);
   color: #ff6b00;
   font-family: var(--font-caps);
-  font-size: 0.82rem;
+  font-size: var(--text-label);
   font-weight: 700;
   cursor: pointer;
   transition: background 0.18s ease;

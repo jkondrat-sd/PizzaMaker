@@ -50,7 +50,7 @@
   /* Just a greeting, not a brand moment — plain UI face. The pizza name below
      carries the character. */
   font-family: var(--font);
-  font-size: 1.9rem;
+  font-size: var(--text-heading);
   font-weight: 600;
   letter-spacing: -0.2px;
   color: var(--text);
@@ -59,7 +59,7 @@
 
 .greeting p {
   font-family: var(--font);
-  font-size: 0.92rem;
+  font-size: var(--text-body);
   font-weight: 400;
   color: var(--text-muted);
   letter-spacing: 0.2px;
@@ -112,7 +112,7 @@
 
 .priceLabel {
   font-family: var(--font-caps);
-  font-size: 0.9rem;
+  font-size: var(--text-body-sm);
   font-weight: 400;
   letter-spacing: 4px;
   color: rgba(255, 255, 255, 0.45);
@@ -123,7 +123,7 @@
      figures so it counts up in place instead of nudging the layout. */
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  font-size: 2.2rem;
+  font-size: var(--text-heading);
   font-weight: 400;
   color: #ff6b00;
   letter-spacing: 0;
@@ -140,7 +140,7 @@
 .resetBtn {
   height: 48px;
   padding: 0 24px;
-  font-size: 0.9rem;
+  font-size: var(--text-body-sm);
   font-weight: 700;
   font-family: var(--font);
   letter-spacing: 0.3px;
@@ -237,7 +237,7 @@
 
   .stickyPriceLabel {
     font-family: var(--font-caps);
-    font-size: 0.75rem;
+    font-size: var(--text-caption);
     font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 2px;
@@ -247,7 +247,7 @@
   .stickyPriceValue {
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
-    font-size: 1.3rem;
+    font-size: var(--text-lead);
     font-weight: 400;
     color: #ff6b00;
   }
@@ -260,11 +260,11 @@
 
 @media screen and (max-width: 520px) {
   .greeting h1 {
-    font-size: 1.4rem;
+    font-size: var(--text-subheading);
   }
 
   .priceValue {
-    font-size: 1.5rem;
+    font-size: var(--text-subheading);
   }
 
   .actionBar {

@@ -1,7 +1,7 @@
 .orderButton {
   width: 180px;
   height: 48px;
-  font-size: 0.92rem;
+  font-size: var(--text-body);
   font-weight: 700;
   font-family: var(--font);
   letter-spacing: 0.3px;

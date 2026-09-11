@@ -90,35 +90,28 @@
   --font-brand: 'Autolova', cursive;
   --font-mono: 'Space Mono', ui-monospace, 'Cascadia Mono', monospace;
 
-  /* Type ramp. Each rung bundles size, line-height and tracking so the three
-     can't drift apart the way 33 loose font-size values did. */
+  /* Type ramp. Nine rungs replacing 35 loose values; each carries a matching
+     line-height so the two can't drift apart. Tracking stays per-rule because
+     it belongs to the face, not the size — the caps face needs far more of it
+     than the body face at the same rung. */
   --text-display: 3rem;
   --text-display-lh: 1.05;
-  --text-display-ls: 0.5px;
-  --text-title: 2.2rem;
+  --text-title: 2.6rem;
   --text-title-lh: 1.1;
-  --text-title-ls: 0.4px;
-  --text-heading: 1.6rem;
-  --text-heading-lh: 1.2;
-  --text-heading-ls: 0.3px;
-  --text-subheading: 1.3rem;
+  --text-heading: 2rem;
+  --text-heading-lh: 1.15;
+  --text-subheading: 1.5rem;
   --text-subheading-lh: 1.25;
-  --text-subheading-ls: 0.2px;
+  --text-lead: 1.2rem;
+  --text-lead-lh: 1.35;
   --text-body: 0.95rem;
   --text-body-lh: 1.55;
-  --text-body-ls: 0;
-  --text-body-sm: 0.85rem;
+  --text-body-sm: 0.875rem;
   --text-body-sm-lh: 1.5;
-  --text-body-sm-ls: 0.1px;
   --text-label: 0.8rem;
   --text-label-lh: 1.3;
-  --text-label-ls: 1px;
   --text-caption: 0.72rem;
   --text-caption-lh: 1.4;
-  --text-caption-ls: 0.3px;
-  --text-micro: 0.68rem;
-  --text-micro-lh: 1.35;
-  --text-micro-ls: 1px;
 
   --slice-color: #c8883a;
   --sauce-color: #c0392b;

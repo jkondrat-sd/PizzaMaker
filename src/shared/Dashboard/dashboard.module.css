@@ -22,7 +22,7 @@
 .dashboard p {
   color: var(--text-muted);
   font-family: var(--font);
-  font-size: 0.9rem;
+  font-size: var(--text-body-sm);
 }
 
 @media screen and (max-width: 700px) {

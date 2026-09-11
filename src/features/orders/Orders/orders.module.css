@@ -29,7 +29,7 @@
   align-items: center;
   gap: 6px;
   font-family: var(--font-caps);
-  font-size: 0.85rem;
+  font-size: var(--text-body-sm);
   font-weight: 400;
   color: #4caf50;
   letter-spacing: 1px;
@@ -78,11 +78,11 @@
   margin-top: 50px;
   color: rgba(255,255,255,0.5);
   font-family: var(--font);
-  font-size: 1rem;
+  font-size: var(--text-body);
 }
 
 .ordersEmptyIcon {
-  font-size: 3rem;
+  font-size: var(--text-display);
 }
 
 .ordersList {
@@ -124,7 +124,7 @@
   flex: 1;
   min-width: 0;
   font-family: var(--font-brand);
-  font-size: 1.3rem;
+  font-size: var(--text-lead);
   font-weight: 400;
   letter-spacing: 0.3px;
   color: #fff;
@@ -139,7 +139,7 @@
   margin-bottom: 12px;
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  font-size: 0.68rem;
+  font-size: var(--text-caption);
   color: rgba(255, 255, 255, 0.32);
   letter-spacing: 0;
 }
@@ -147,7 +147,7 @@
 .orderStatus {
   padding: 4px 14px;
   border-radius: 20px;
-  font-size: 0.82rem;
+  font-size: var(--text-label);
   font-weight: 400;
   font-family: var(--font-caps);
   letter-spacing: 1px;
@@ -195,7 +195,7 @@
 
 .orderDetailLabel {
   font-family: var(--font-caps);
-  font-size: 0.82rem;
+  font-size: var(--text-label);
   font-weight: 400;
   color: rgba(255, 255, 255, 0.45);
   text-transform: uppercase;
@@ -205,7 +205,7 @@
 
 .orderDetailValue {
   font-family: var(--font);
-  font-size: 0.9rem;
+  font-size: var(--text-body-sm);
   color: rgba(255, 255, 255, 0.85);
 }
 
@@ -224,7 +224,7 @@
   border: 1px solid rgba(255, 107, 0, 0.35);
   color: #ff6b00;
   font-weight: 400;
-  font-size: 0.9rem;
+  font-size: var(--text-body-sm);
   font-family: var(--font-caps);
   letter-spacing: 1px;
   border-radius: 10px;

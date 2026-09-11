@@ -72,7 +72,7 @@
 }
 
 .modalCheckmark {
-  font-size: 2.8rem;
+  font-size: var(--text-title);
   color: #ff6b00;
   line-height: 1;
   font-weight: 900;
@@ -83,7 +83,7 @@
   font-family: var(--font-caps);
   font-weight: 400;
   margin: 0;
-  font-size: 2rem;
+  font-size: var(--text-heading);
   letter-spacing: 0.5px;
   line-height: 1.1;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
@@ -101,7 +101,7 @@
   margin: 2px 0 6px;
   text-align: center;
   font-family: var(--font-brand);
-  font-size: 1.35rem;
+  font-size: var(--text-subheading);
   letter-spacing: 0.3px;
   color: var(--accent);
 }
@@ -131,7 +131,7 @@
 
 .receiptLabel {
   font-family: var(--font-caps);
-  font-size: 0.82rem;
+  font-size: var(--text-label);
   font-weight: 400;
   color: rgba(255,255,255,0.45);
   text-transform: uppercase;
@@ -140,7 +140,7 @@
 
 .receiptValue {
   font-family: var(--font);
-  font-size: 0.9rem;
+  font-size: var(--text-body-sm);
   color: rgba(255,255,255,0.85);
   text-align: right;
   max-width: 60%;
@@ -153,7 +153,7 @@
   color: #ff6b00;
   font-weight: 700;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--text-caption);
   letter-spacing: 0;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -165,7 +165,7 @@
   font-variant-numeric: tabular-nums;
   color: #ff6b00;
   font-weight: 700;
-  font-size: 1.15rem;
+  font-size: var(--text-lead);
   text-shadow: 0 0 14px rgba(255, 107, 0, 0.35);
 }
 
@@ -178,14 +178,14 @@
   padding: 3px 12px;
   border-radius: 999px;
   font-family: var(--font-caps);
-  font-size: 0.8rem;
+  font-size: var(--text-label);
   font-weight: 400;
   letter-spacing: 1.2px;
 }
 
 .modalNote {
   font-family: var(--font);
-  font-size: 0.8rem;
+  font-size: var(--text-label);
   color: rgba(255,255,255,0.4);
   text-align: center;
   margin: 0;

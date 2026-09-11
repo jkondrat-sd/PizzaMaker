@@ -39,7 +39,7 @@
      size is a touch smaller and the line-height a touch looser to compensate. */
   font-family: var(--font-brand);
   font-weight: 400;
-  font-size: 1.5rem;
+  font-size: var(--text-subheading);
   letter-spacing: 0.3px;
   line-height: 1.2;
 
@@ -102,7 +102,7 @@
   background: var(--accent);
   color: #fff;
   font-family: var(--font);
-  font-size: 0.76rem;
+  font-size: var(--text-label);
   font-weight: 500;
   box-shadow: 0 6px 18px rgba(255, 107, 0, 0.32);
   animation: nudgeIn 0.28s ease-out;
@@ -151,7 +151,7 @@
   background: rgba(255, 255, 255, 0.06);
   color: #fff;
   font-family: var(--font-caps);
-  font-size: 1.15rem;
+  font-size: var(--text-lead);
   letter-spacing: 0.5px;
   outline: none;
 }
@@ -182,6 +182,6 @@
 .hint {
   flex-basis: 100%;
   font-family: var(--font);
-  font-size: 0.7rem;
+  font-size: var(--text-caption);
   color: rgba(255, 255, 255, 0.4);
 }

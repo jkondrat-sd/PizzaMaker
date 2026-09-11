@@ -24,20 +24,20 @@
 }
 
 .emoji {
-  font-size: 3rem;
+  font-size: var(--text-display);
   line-height: 1;
 }
 
 .card h1 {
   font-family: var(--font);
-  font-size: 1.4rem;
+  font-size: var(--text-subheading);
   font-weight: 700;
   color: var(--text);
 }
 
 .card p {
   font-family: var(--font);
-  font-size: 0.95rem;
+  font-size: var(--text-body);
   color: var(--text-muted);
   line-height: 1.5;
 }
@@ -50,7 +50,7 @@
   border: none;
   color: #ffffff;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: var(--text-body);
   font-family: var(--font);
   border-radius: var(--radius-md);
   box-shadow: 0 4px 16px rgba(255, 107, 0, 0.35);

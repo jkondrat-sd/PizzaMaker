@@ -25,7 +25,7 @@
   background: var(--accent);
   color: #fff;
   font-family: var(--font-caps);
-  font-size: 2rem;
+  font-size: var(--text-heading);
   box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.18);
 }
 
@@ -33,7 +33,7 @@
   margin: 0;
   color: #fff;
   font-family: var(--font-brand);
-  font-size: 1.85rem;
+  font-size: var(--text-heading);
   letter-spacing: 0;
 }
 
@@ -41,7 +41,7 @@
   margin: 0 0 14px;
   max-width: 42ch;
   font-family: var(--font);
-  font-size: 0.9rem;
+  font-size: var(--text-body-sm);
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.6);
 }
@@ -92,7 +92,7 @@
 
 .linkLabel {
   font-family: var(--font-caps);
-  font-size: 0.72rem;
+  font-size: var(--text-caption);
   letter-spacing: 1.5px;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.45);
@@ -100,7 +100,7 @@
 
 .linkValue {
   font-family: var(--font);
-  font-size: 0.9rem;
+  font-size: var(--text-body-sm);
   color: rgba(255, 255, 255, 0.9);
   white-space: nowrap;
   overflow: hidden;
@@ -114,7 +114,7 @@
   gap: 6px;
   margin-top: 18px;
   font-family: var(--font-caps);
-  font-size: 0.82rem;
+  font-size: var(--text-label);
   letter-spacing: 0.5px;
   color: var(--accent);
   text-decoration: none;
