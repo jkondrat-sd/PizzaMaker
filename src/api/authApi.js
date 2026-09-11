@@ -1,6 +1,6 @@
 import toast from 'react-hot-toast';
 import api from '@/api/axiosClient';
-import store from '@/store';
+import store, { resetApp } from '@/store';
 import { authActions } from '@/store/authSlice';
 import { buildUserDataInStore } from '@/utils/userState';
 
@@ -53,8 +53,11 @@ const createGuest = async (guestDetails) => {
 const logoutUser = async () => {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
-  store.dispatch(authActions.setLoggedIn(false));
-  buildUserDataInStore({ uid: '', firstName: '', emailId: '', userType: '' });
+  // Wipe the whole store, not just auth — otherwise the pizza being built,
+  // its step, and any current order survive the logout untouched, and the
+  // next person to use this browser (or this user logging back in) inherits
+  // a half-finished flow that no longer matches what's on screen.
+  store.dispatch(resetApp());
   toast.success('Logged out successfully.');
 };
 

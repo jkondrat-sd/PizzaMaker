@@ -5,6 +5,7 @@ import { pizzaHubActions, TOPPING_QUANTITIES } from '@/store/pizzaHubSlice';
 import { TOPPING_CATALOG } from '@/config/toppingCatalog';
 import { TOPPING_ART } from '@/features/pizza/PizzaCanvas/toppingArt';
 import usePizzaSound from '@/hooks/usePizzaSound';
+import { useAuthGate } from '@/hooks/useAuthGate';
 import styles from './toppingsMenu.module.css';
 
 const CHEESE_SWATCHES = {
@@ -47,8 +48,10 @@ const ToppingsMenu = () => {
     dispatch(pizzaHubActions.cycleToppingQuantity(key));
   }, [toppings, dispatch, playPlop]);
 
+  const authGate = useAuthGate();
+
   return (
-    <div className={styles.toppingsMenu}>
+    <div className={styles.toppingsMenu} onClickCapture={authGate}>
       {/* Heading and tip share the grid's first row — a bare <p> here would be
           auto-placed into row 2 and collide with the toppings grid. */}
       <div className={styles.header}>

@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import PizzaCanvas from '@/features/pizza/PizzaCanvas/PizzaCanvas';
 import { applyPizzaConfigToBuilder } from '@/features/pizza/PizzaCanvas/fromOrder';
 import { PRESET_PIZZAS } from './presets';
+import { useAuthGate } from '@/hooks/useAuthGate';
 import styles from './presetPizzas.module.css';
 
 const PresetPizzas = () => {
@@ -41,14 +42,16 @@ const PresetPizzas = () => {
     // the page (below the fold on most screens). Without this, clicking a preset
     // looks like it did nothing — the only feedback was the toast, and the pizza
     // silently changed out of sight. Bring the pizza to the user so the pick is
-    // visibly meaningful. Works the same whether or not they're logged in.
+    // visibly meaningful.
     if (typeof document !== 'undefined') {
       document.getElementById('pizza-preview')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   };
 
+  const authGate = useAuthGate();
+
   return (
-    <div className={styles.presets}>
+    <div className={styles.presets} onClickCapture={authGate}>
       <h3 className={styles.heading}>Quick Start</h3>
       <p className={styles.tip}>Grab a classic and make it yours — every preset is still fully editable.</p>
       <div

@@ -4,8 +4,15 @@ import { authActions } from '@/store/authSlice';
 import { API_BASE } from '@/config/apiBase';
 import { beginRequest } from '@/api/warmup';
 
+// A real cold start on Render's free tier has been measured at up to ~130s;
+// this gives real margin above that so a legitimate cold start never gets cut
+// off mid-wake. Without any timeout at all, a genuinely dead backend hung a
+// request (and the warmup overlay) forever, with no error and no way out.
+const REQUEST_TIMEOUT_MS = 150000;
+
 const api = axios.create({
   baseURL: API_BASE,
+  timeout: REQUEST_TIMEOUT_MS,
 });
 
 // Attach JWT to every request, and arm the cold-start warm-up detector. The
@@ -36,8 +43,10 @@ api.interceptors.response.use(
     if (err.response?.status === 401 && !url.includes('/api/v1/auth/') && hasToken) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      store.dispatch(authActions.reset());
-      window.location.replace('/login');
+      // sessionExpired (not reset) so SessionWatcher can redirect through the
+      // router and toast — a hard window.location.replace used to re-fetch
+      // the bundle and every font, and silently drop any pizza in progress.
+      store.dispatch(authActions.sessionExpired());
     }
     return Promise.reject(err);
   }

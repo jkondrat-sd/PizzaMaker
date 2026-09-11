@@ -8,6 +8,10 @@ const authSlice = createSlice({
     firstName: '',
     emailId: '',
     userType: '',
+    // Set when a request 401s on an expired/invalid token. A top-level
+    // component watches this to redirect via the router instead of a hard
+    // page reload. Cleared on the next successful login/logout.
+    sessionExpired: false,
   },
   reducers: {
     setLoggedIn(state, action) {
@@ -25,12 +29,21 @@ const authSlice = createSlice({
     setUserType(state, action) {
       state.userType = action.payload;
     },
+    sessionExpired(state) {
+      state.loggedIn = false;
+      state.uid = '';
+      state.firstName = '';
+      state.emailId = '';
+      state.userType = '';
+      state.sessionExpired = true;
+    },
     reset(state) {
       state.loggedIn = false;
       state.uid = '';
       state.firstName = '';
       state.emailId = '';
       state.userType = '';
+      state.sessionExpired = false;
     },
   },
 });

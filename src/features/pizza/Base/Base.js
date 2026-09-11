@@ -5,6 +5,7 @@ import { ChevronDown } from 'lucide-react';
 import { PIZZASIZES } from '@/utils/helpers';
 import { pizzaHubActions, SAUCE_TYPES } from '@/store/pizzaHubSlice';
 import { pizzaActions, CRUST_STYLES, BAKE_LEVELS } from '@/store/pizzaSlice';
+import { useAuthGate } from '@/hooks/useAuthGate';
 import styles from './base.module.css';
 
 // Real chain terminology: "Hand Tossed" (not "Classic"), sizes shown with
@@ -57,8 +58,10 @@ const Base = (props) => {
     dispatch(pizzaHubActions.setSauceType(sauceType));
   };
 
+  const authGate = useAuthGate();
+
   return (
-    <div className={styles.baseRoot}>
+    <div className={styles.baseRoot} onClickCapture={authGate}>
       <div className={styles.section}>
         <h2>Crust Size</h2>
         <div className={styles.sizeSlider}>

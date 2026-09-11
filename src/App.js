@@ -3,6 +3,7 @@ import './App.css';
 import Home from '@/pages/Home/Home';
 import ErrorBoundary from '@/shared/ErrorBoundary/ErrorBoundary';
 import ApiGate from '@/shared/ApiGate/ApiGate';
+import SessionWatcher from '@/shared/SessionWatcher/SessionWatcher';
 import WarmupOverlay from '@/shared/WarmupOverlay/WarmupOverlay';
 
 const App = (props) => {
@@ -17,6 +18,7 @@ const App = (props) => {
           error: { iconTheme: { primary: '#e53935', secondary: '#fff' } },
         }}
       />
+      <SessionWatcher />
       <WarmupOverlay />
       <ApiGate>
         <ErrorBoundary>

@@ -7,6 +7,7 @@ import './index.css';
 import store from './store/index';
 import { authActions } from './store/authSlice';
 import { buildUserDataInStore } from './utils/userState';
+import { isTokenExpired } from './utils/jwt';
 
 // Rehydrate auth from localStorage before the React tree renders.
 // Require both a stored user record AND a token so a stale user entry
@@ -14,15 +15,30 @@ import { buildUserDataInStore } from './utils/userState';
 const storedUser = localStorage.getItem('user');
 const storedToken = localStorage.getItem('token');
 if (storedUser && storedToken) {
-  try {
-    const userData = JSON.parse(storedUser);
-    buildUserDataInStore(userData);
-    store.dispatch(authActions.setLoggedIn(true));
-  } catch (_) {
+  if (isTokenExpired(storedToken)) {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
+  } else {
+    try {
+      const userData = JSON.parse(storedUser);
+      buildUserDataInStore(userData);
+      store.dispatch(authActions.setLoggedIn(true));
+    } catch (_) {
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+    }
   }
 }
+
+// Logging out in one tab must not leave other tabs showing a stale session.
+// The 'storage' event only fires in OTHER tabs, never the one that made the
+// change, and only for the token going away — the sound preference and the
+// two one-time nudge keys also live in localStorage and must not trigger this.
+window.addEventListener('storage', (e) => {
+  if (e.key === 'token' && !e.newValue) {
+    store.dispatch(authActions.reset());
+  }
+});
 
 const root = createRoot(document.getElementById('root'));
 root.render(
@@ -30,5 +46,5 @@ root.render(
     <Provider store={store}>
       <App />
     </Provider>
-  </Router>
+  </Router>,
 );
