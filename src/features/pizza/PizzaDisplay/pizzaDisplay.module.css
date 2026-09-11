@@ -1,5 +1,11 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
 .pizza {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13,14 +19,22 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
+/* Normal flow now, not an absolute overlay — it sits below the circle as a
+   plain flex sibling in .wrap, so it can never overlap the crust above it or
+   crowd the price card below it, at any screen size or pizza state. */
 .dragHint {
-  position: absolute;
-  bottom: -6px;
-  left: 50%;
-  transform: translateX(-50%);
+  /* A bare `button { width; height; display }` rule in shared/Button leaks
+     globally to every native <button>, CSS Modules only scopes class
+     selectors, not element ones. Without its own width/height/display this
+     pill inherited that fixed 100x50 box and the nowrap text spilled
+     straight out of it. Declaring all three here wins on specificity. */
+  display: inline-flex;
+  align-items: center;
+  width: auto;
+  height: auto;
   white-space: nowrap;
   font-family: var(--font);
-  font-size: 0.7rem;
+  font-size: var(--text-caption);
   font-weight: 500;
   color: var(--text-muted);
   background: var(--glass-bg);
@@ -36,9 +50,20 @@
   border-color: var(--glass-border);
 }
 
+/* Fixed sizes per step rather than a continuous min(360px, Nvw) — the old
+   formula tied the box directly to live window width, so the pizza (and
+   anything anchored to it) visibly resized on every pixel of window resize
+   below the breakpoint instead of holding still. */
 @media screen and (max-width: 1360px) {
   .pizza {
-    width: min(360px, 90vw);
-    height: min(360px, 90vw);
+    width: 320px;
+    height: 320px;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .pizza {
+    width: min(280px, 92vw);
+    height: min(280px, 92vw);
   }
 }

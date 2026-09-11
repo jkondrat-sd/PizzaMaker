@@ -36,18 +36,22 @@ const PizzaDisplay = () => {
   };
 
   return (
-    <div className={styles.pizza}>
-      {loggedIn ? (
-        <>
+    <div className={styles.wrap}>
+      <div className={styles.pizza}>
+        {loggedIn ? (
           <PizzaCanvas editable sliceMode={isSlicing ? 'once' : 'none'} />
-          {showHint && (
-            <button className={styles.dragHint} onClick={dismissHint}>
-              Drag any topping to place it exactly where you want
-            </button>
-          )}
-        </>
-      ) : (
-        <PizzaCanvas base={DEMO_BASE} toppings={DEMO_TOPPINGS} size='medium' idle />
+        ) : (
+          <PizzaCanvas base={DEMO_BASE} toppings={DEMO_TOPPINGS} size='medium' idle />
+        )}
+      </div>
+      {/* A normal-flow sibling below the circle, not an absolutely-positioned
+          overlay on top of it — that used to overlap the crust and crowd the
+          price card beneath, since an absolutely-positioned child is ignored
+          by the flex gap that spaces the pizza from the action bar. */}
+      {loggedIn && showHint && (
+        <button className={styles.dragHint} onClick={dismissHint}>
+          Drag any topping to place it exactly where you want
+        </button>
       )}
     </div>
   );
