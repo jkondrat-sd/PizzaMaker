@@ -2,10 +2,16 @@ name = "pizzamaker-keep-warm"
 main = "src/index.js"
 compatibility_date = "2026-09-01"
 
-# Fires every 5 minutes, comfortably inside Render's 15-minute free-tier sleep
-# window. This replaced a GitHub Actions cron doing the same job on a 12-minute
-# schedule — GitHub's scheduler is best-effort and was actually firing every
-# 2-5 hours instead, so the backend was sleeping almost all the time anyway.
-# Cloudflare Cron Triggers run on schedule.
+# No public URL. A workers.dev route would expose this on the account's
+# personal subdomain, and the Worker doesn't need to be reachable from the
+# internet at all — the cron trigger fires it internally. Check runs in the
+# Cloudflare dashboard, or with: npx wrangler tail pizzamaker-keep-warm
+workers_dev = false
+
+# Every 3 minutes, well inside Render's 15-minute free-tier sleep window, so
+# several pings land before it could ever doze off. This replaced a GitHub
+# Actions cron on the same job — its own run history showed gaps of 2-5 hours
+# instead of the configured 12 minutes, GitHub silently throttles frequent
+# schedules on low-activity repos. Cloudflare Cron Triggers run on schedule.
 [triggers]
-crons = ["*/5 * * * *"]
+crons = ["*/3 * * * *"]
