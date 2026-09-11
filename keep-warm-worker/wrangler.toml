@@ -1,0 +1,11 @@
+name = "pizzamaker-keep-warm"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+# Fires every 5 minutes, comfortably inside Render's 15-minute free-tier sleep
+# window. This replaced a GitHub Actions cron doing the same job on a 12-minute
+# schedule — GitHub's scheduler is best-effort and was actually firing every
+# 2-5 hours instead, so the backend was sleeping almost all the time anyway.
+# Cloudflare Cron Triggers run on schedule.
+[triggers]
+crons = ["*/5 * * * *"]

@@ -10,6 +10,7 @@ import PizzaNameField from './PizzaNameField';
 import PizzaCanvas from '@/features/pizza/PizzaCanvas/PizzaCanvas';
 import { CONFIRM_PATH, HOME_PATH } from '@/utils/routes';
 import { createOrder } from '@/api/appApi';
+import { toastApiError } from '@/utils/apiError';
 import { uiActions } from '@/store/uiSlice';
 import styles from './checkout.module.css';
 
@@ -73,6 +74,13 @@ const Checkout = () => {
       .catch((e) => {
         console.error('Error in creating order' + e);
         setIsPlacingOrder(false);
+        // This used to fail completely silently — the button just went back
+        // to clickable with zero explanation. The idempotency key above is
+        // reused on retry by design, so retrying here can't double the order.
+        toastApiError(e, {
+          fallback: "Couldn't place your order. Please try again.",
+          onRetry: orderHandler,
+        });
       });
   };
 

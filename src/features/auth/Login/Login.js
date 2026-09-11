@@ -1,11 +1,11 @@
 ﻿import { useState } from 'react';
-import toast from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
 import { NavLink, useHistory, withRouter } from 'react-router-dom';
 import Button from '@/shared/Button/Button';
 import { GUEST_PATH, HOME_PATH, SIGNUP_PATH } from '@/utils/routes';
 import { uiActions } from '@/store/uiSlice';
 import { loginUser } from '@/api/authApi';
+import { toastApiError } from '@/utils/apiError';
 import { fetchLoggedInUser, fetchUserOrders } from '@/api/appApi';
 import logoPlaqueImg from '@/assets/images/logo-plaque.png';
 import styles from './login.module.css';
@@ -28,7 +28,7 @@ const Login = (props) => {
   };
 
   const handleLoginUser = async (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setErrors({});
@@ -42,8 +42,13 @@ const Login = (props) => {
         dispatch(uiActions.setBackdrop(false));
       }
     } catch (err) {
-      const msg = err.response?.data?.error || 'Login failed. Check your credentials.';
-      toast.error(msg);
+      // A timed-out/unreachable request used to fall back to "check your
+      // credentials", which is wrong when the request never reached the
+      // server at all — and gave no way to try again short of a page reload.
+      toastApiError(err, {
+        fallback: 'Login failed. Check your credentials.',
+        onRetry: () => handleLoginUser(),
+      });
     } finally {
       setLoading(false);
     }

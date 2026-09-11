@@ -647,7 +647,7 @@ Opens `http://localhost:3000`. The `cross-env NODE_OPTIONS=--openssl-legacy-prov
 | Frontend shows "Network Error" on login                | Backend not running, or wrong API URL | Check `.env`, confirm backend is on `:8080`               |
 | WebSocket "Live" dot grey/red                          | CORS mismatch                         | Verify `ALLOWED_ORIGINS` env var matches the frontend URL |
 | H2 console: table not found                            | Wrong JDBC URL                        | Use exactly `jdbc:h2:mem:pizzadb`                         |
-| Render free tier: first request hangs ~30s             | Backend spun down after 15 min idle   | Wait for cold start; subsequent requests are fast         |
+| Render free tier: first request hangs 30s-2min+        | Backend spun down after 15 min idle   | keep-warm-worker/ pings it every 5 min; wait for cold start otherwise |
 
 ---
 
@@ -750,16 +750,26 @@ Environment variable:
 **Notes:**
 
 - Render free tier spins down after 15 minutes idle — the first request then eats
-  a 30–60s cold start (container wake + Spring Boot boot). Warm, every call is
-  <1s. Two things soften this:
-  - **Keep-warm cron** (`.github/workflows/keep-warm.yml`) pings a lightweight,
-    CORS-open, DB-free endpoint every ~12 min so the instance rarely sleeps.
-    GitHub cron is best-effort; UptimeRobot is a more punctual alternative.
+  a cold start (measured up to ~130s in the worst case; container wake + Spring
+  Boot boot). Warm, every call is <1s. Two things soften this:
+  - **Keep-warm Worker** (`keep-warm-worker/`, a Cloudflare Worker on a Cron
+    Trigger) pings `/actuator/health` every 5 min so the instance rarely
+    sleeps. See `keep-warm-worker/README.md` for deploy/verify steps. This
+    replaced a GitHub Actions cron on the same job — its own run history
+    showed gaps of 2-5 hours instead of the configured 12 minutes, GitHub's
+    scheduler silently throttles frequent schedules on low-activity repos.
+    Cloudflare Cron Triggers run on schedule.
   - **Warm-up overlay** (`src/shared/WarmupOverlay`, driven by
     `src/api/warmup.js` off the axios interceptors) shows a branded "Firing up
     the oven" state whenever a request outlives ~1.8s, so a cold start reads as
     intentional rather than broken. It never appears on a warm backend. This is
     distinct from `ApiGate`, which only covers the initial page load.
+  - The axios client also carries a 150s request timeout (`src/api/axiosClient.js`)
+    with margin above the worst measured cold start, so a genuinely dead
+    backend fails with a retryable error instead of hanging forever. Login and
+    checkout surface that failure via a toast with a Retry button
+    (`src/utils/apiError.js`) rather than the silent hang or misleading
+    message either used to show.
 - `ALLOWED_ORIGINS` must include every domain the frontend is served from.
 - WebSocket CORS is driven by the same `ALLOWED_ORIGINS` env var.
 

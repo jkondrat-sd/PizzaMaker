@@ -116,7 +116,8 @@ Not "what is Kafka" — what does it do *in this app*, and what breaks if you re
 | **k6** | Load-tests the order path (`k6-order-load.js`) | No evidence the thing holds up under concurrency |
 | **Docker / docker-compose** | One command brings up Postgres + Kafka + the app | Manual setup of three services |
 | **Kubernetes / Helm** | Runs multiple replicas with health probes and config/secrets split out | No multi-replica story |
-| **GitHub Actions** | CI on every push, the keep-warm cron, and multi-arch image publishing to GHCR | Manual builds; the free-tier backend sleeps |
+| **GitHub Actions** | CI on every push and multi-arch image publishing to GHCR | Manual builds |
+| **Cloudflare Worker (Cron Trigger)** | Pings the backend every 5 min so Render's free tier never sleeps (`keep-warm-worker/`) | The free-tier backend sleeps; first visitor eats a cold start |
 
 ---
 
@@ -422,7 +423,7 @@ script is shaped the way it is.
 
 | Symptom | Cause |
 |---|---|
-| Live site "takes forever" to sign in / place an order | Render free-tier **cold start** (sleeps after ~15 min idle, 30–60s to wake). NOT the code — warm, it's <1s. Softened by the keep-warm cron (`.github/workflows/keep-warm.yml`) and the "Firing up the oven" overlay (`src/shared/WarmupOverlay`). |
+| Live site "takes forever" to sign in / place an order | Render free-tier **cold start** (sleeps after ~15 min idle; measured up to ~130s to wake). NOT the code — warm, it's <1s. Softened by the keep-warm Cloudflare Worker (`keep-warm-worker/`, pings every 5 min) and the "Firing up the oven" overlay (`src/shared/WarmupOverlay`). If the backend is genuinely down rather than just cold, a 150s request timeout (`src/api/axiosClient.js`) now fails with a Retry toast instead of hanging forever. |
 | Order history / receipt shows "Plain" for a loaded pizza | Was a real bug: the old formatter filtered `value === true`, catching cheese booleans but never the `toppings` array. Fixed via `orderIngredientLabels()` in `fromOrder.js` — use it, don't reinvent it. |
 | App boots fine but consumes nothing | A listener bean missing `@Lazy(false)`. `spring.main.lazy-initialization=true` is set globally, so a lazy bean is never instantiated, so its `@KafkaListener` is never registered. Silent. |
 | Kafka pod `CrashLoopBackOff`, `OOMKilled` | minikube's default 2GB. Kafka needs ~1GB to itself. `--memory=4096`. |
